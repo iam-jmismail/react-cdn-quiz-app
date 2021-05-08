@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Quiz App</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+        crossorigin="anonymous"></script>
+
+    <!-- Scripts  -->
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="app"></div>
+    <script type="text/babel">
+
+        // Globals 
+        const MAX_QUESTIONS = 3;
+        // const LEVEL = 2
+
+        // Questions 
+        class Questions extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    num1: this.generateRandomNumber(this.props.level),
+                    num2: this.generateRandomNumber(this.props.level),
+                    response: '',
+                    points: 0,
+                    question: 1,
+                    correct: 0,
+                    wrong: 0,
+                    questions: [],
+                }
+            }
+
+            onChange(value, name) {
+                this.setState({
+                    [name]: value
+                })
+            }
+
+            generateRandomNumber(level) {
+                const base = Math.pow(10, level)
+                return Math.ceil(Math.random() * base)
+            }
+
+            verifyAnswer() {
+                const { num1, num2, response } = this.state;
+                if ((num1 + num2) === parseInt(response)) {
+                    this.setState(state => ({
+                        points: state.points + 1,
+                        question: state.question + 1,
+                        correct: state.correct + 1,
+                        questions: [...state.questions, {
+                            num1: state.num1,
+                            num2: state.num2,
+                            response: state.response,
+                        }],
+                        num1: this.generateRandomNumber(this.props.level),
+                        num2: this.generateRandomNumber(this.props.level),
+                        response: '',
+                    }))
+                }
+                else {
+                    this.setState(state => ({
+                        points: state.points - 1 / 3,
+                        question: state.question + 1,
+                        wrong: state.wrong + 1,
+                        questions: [...state.questions, {
+                            num1: state.num1,
+                            num2: state.num2,
+                            response: state.response,
+                        }],
+                        num1: this.generateRandomNumber(this.props.level),
+                        num2: this.generateRandomNumber(this.props.level),
+                        response: '',
+                    }))
+                }
+            }
+
+            playAgain() {
+                this.setState(state => ({
+                    num1: this.generateRandomNumber(this.props.level),
+                    num2: this.generateRandomNumber(this.props.level),
+                    response: '',
+                    points: 0,
+                    question: 1,
+                    correct: 0,
+                    wrong: 0,
+                    questions: []
+                }))
+            }
+
+            renderQuestions() {
+                const { num1, num2, response, points, question, level } = this.state;
+                const percentage = (((question - 1) / MAX_QUESTIONS) * 100).toFixed(0).toString();
+
+                return (
+                    <div className="container my-4">
+                        <h2 className="text-center">React Quiz App</h2>
+                        <h2 className="text-center">{num1} + {num2} = ? </h2>
+
+                        <div className="bg-light my-4 py-3 px-2">
+                            <div className="d-flex justify-content-between">
+                                <div><b>Level :</b>  {this.props.level}</div>
+                                <div><b>Question:</b>    {question} / {MAX_QUESTIONS}</div>
+                                <div><b>Points :</b> {points.toFixed(2)}</div>
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <input type="number" autoComplete="off" className="form-control" name="response" value={response} onChange={(e) => this.onChange(e.target.value, 'response')} onKeyDown={(e) => {
+                                if (e.key == 'Enter') {
+                                    this.verifyAnswer()
+                                }
+                            }} />
+                        </div>
+                        <button className="btn btn-outline-primary" disabled={!response} onClick={() => this.verifyAnswer()}> {MAX_QUESTIONS === question ? "Finish Quiz" : "Next Question"} </button>
+
+
+                        { /*  * * * * * * * * * * * * * * * * Progress * * * * * * * * * * * * * * * */}
+
+                        { question > 1 && (
+                            <div className="my-3">
+                                <div className="progress" style={{ height: 25 }}>
+                                    <div className="progress-bar" role="progressbar" style={{ width: `${percentage}%` }}>
+                                        Question {question} / {MAX_QUESTIONS}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        { /*  * * * * * * * * * * * * * * * * Progress * * * * * * * * * * * * * * * */}
+
+                    </div>
+                )
+            }
+
+            renderResults() {
+                const { points, correct, wrong, questions, level } = this.state;
+                const percentage = ((correct / MAX_QUESTIONS) * 100).toFixed(2);
+                let remark;
+
+                if (percentage >= 90) {
+                    remark = "Math Genius"
+                }
+                else if (percentage >= 70) {
+                    remark = "Excellent"
+                }
+                else if (percentage >= 50) {
+                    remark = "Above Average"
+                }
+                else {
+                    remark = "Very Poor"
+                }
+
+                return (
+                    <div className="container my-4 text-center">
+                        <h2>React Quiz App</h2>
+                        <h3 className="text-success">  Results </h3>
+                        <h5><b>Remarks </b> : {remark} </h5>
+                        <button className="btn btn-outline-primary" onClick={() => this.playAgain()}> Play Again </button>
+                        <table className="table table-bordered mt-4">
+                            <thead>
+                                <tr>
+                                    <th>Level</th>
+                                    <th>Correct</th>
+                                    <th>Wrong</th>
+                                    <th>Score</th>
+                                    <th>&#40; % &#41; of correctness</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{level}</td>
+                                    <td>{correct}</td>
+                                    <td>{wrong}</td>
+                                    <td>{points.toFixed(2)}</td>
+                                    <td>{percentage} % </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table className="table table-bordered mt-4">
+                            <thead>
+                                <tr>
+                                    <th>Question</th>
+                                    <th>Num 1</th>
+                                    <th>Num 2 </th>
+                                    <th>Your Answer</th>
+                                    <th>Correct </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    questions && questions.map((question, index) => (
+                                        <tr key={index} className={(question.num1 + question.num2 !== parseInt(question.response)) ? "bg-danger text-light" : ""}>
+                                            <td>{index + 1}</td>
+                                            <td>{question.num1}</td>
+                                            <td>{question.num2}</td>
+                                            <td>{question.response}</td>
+                                            <td>{question.num1 + question.num2}</td>
+                                        </tr>
+                                    ))
+                                }
+                            </tbody>
+                        </table>
+
+                    </div>
+                )
+            }
+
+            render() {
+                const { question } = this.state;
+                if (question === (MAX_QUESTIONS + 1)) {
+                    return this.renderResults()
+                }
+                else {
+                    return this.renderQuestions()
+                }
+            }
+        }
+
+
+        // App Component 
+        class App extends React.Component {
+            constructor(props) {
+                super(props)
+                this.state = {
+                    level: 1
+                }
+            }
+
+            increaseLevel() {
+                this.setState(state => ({
+                    level: state.level + 1
+                }))
+            }
+
+            decreaseLevel() {
+                if (this.state.level > 1) {
+                    this.setState(state => ({
+                        level: state.level - 1
+                    }))
+                }
+            }
+
+            render() {
+                const { level } = this.state
+                return (
+                    <div>
+                       {
+                           /*
+                         <div className="d-flex justify-content-center mt-4">
+                            <button className="btn btn-outline-primary btn-sm" onClick={() => this.decreaseLevel()}> - </button>
+                            <span className="text-primary mx-2"> {level}</span>
+                            <button className="btn btn-outline-primary btn-sm" onClick={() => this.increaseLevel()}> + </button>
+                        </div>
+                           */
+                       }
+                        <Questions level={this.state.level} />
+                    </div>
+                )
+            }
+        }
+
+        ReactDOM.render(<App />, document.querySelector('#app'))
+    </script>
+</body>
+
+</html>
