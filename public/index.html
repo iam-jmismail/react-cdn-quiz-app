@@ -146,6 +146,16 @@
 
                         { /*  * * * * * * * * * * * * * * * * Progress * * * * * * * * * * * * * * * */}
 
+
+                        <div class="bg-light mt-2 py-3 px-2">
+                            <h4>  Instructions </h4>
+                            <ul>
+                                <li>Type your answers and Press Enter</li>
+                                <li>Total 10 Questions </li>
+                                <li>For every correct answer 1 point  </li>
+                                <li>For every wrong answer negative points 1/3rd of correct answer  </li>
+                            </ul>
+                        </div>
                     </div>
                 )
             }
@@ -263,15 +273,15 @@
                 const { level } = this.state
                 return (
                     <div>
-                       {
-                           /*
-                         <div className="d-flex justify-content-center mt-4">
-                            <button className="btn btn-outline-primary btn-sm" onClick={() => this.decreaseLevel()}> - </button>
-                            <span className="text-primary mx-2"> {level}</span>
-                            <button className="btn btn-outline-primary btn-sm" onClick={() => this.increaseLevel()}> + </button>
-                        </div>
-                           */
-                       }
+                        {
+                            /*
+                          <div className="d-flex justify-content-center mt-4">
+                             <button className="btn btn-outline-primary btn-sm" onClick={() => this.decreaseLevel()}> - </button>
+                             <span className="text-primary mx-2"> {level}</span>
+                             <button className="btn btn-outline-primary btn-sm" onClick={() => this.increaseLevel()}> + </button>
+                         </div>
+                            */
+                        }
                         <Questions level={this.state.level} />
                     </div>
                 )
