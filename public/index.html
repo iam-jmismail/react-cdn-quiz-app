@@ -111,7 +111,7 @@
 
                 return (
                     <div className="container my-4">
-                        <h2 className="text-center">React Quiz App</h2>
+                        <h2 className="text-center"> Quiz App</h2>
                         <h2 className="text-center">{num1} + {num2} = ? </h2>
 
                         <div className="bg-light my-4 py-3 px-2">
@@ -156,6 +156,11 @@
                                 <li>For every wrong answer negative points 1/3rd of correct answer  </li>
                             </ul>
                         </div>
+
+                        <div className="my-4">
+                            <b>Share : </b> <a href="https://react-quiz-app-demo.herokuapp.com/">https://react-quiz-app-demo.herokuapp.com/</a>
+                        </div>
+
                     </div>
                 )
             }
@@ -180,10 +185,13 @@
 
                 return (
                     <div className="container my-4 text-center">
-                        <h2>React Quiz App</h2>
+                        <h2>Quiz App</h2>
                         <h3 className="text-success">  Results </h3>
                         <h5><b>Remarks </b> : {remark} </h5>
                         <button className="btn btn-outline-primary" onClick={() => this.playAgain()}> Play Again </button>
+                        <div className="my-4">
+                            <b>Share : </b> <a href="https://react-quiz-app-demo.herokuapp.com/">https://react-quiz-app-demo.herokuapp.com/</a>
+                        </div>
                         <table className="table table-bordered mt-4">
                             <thead>
                                 <tr>
